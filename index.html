@@ -23,7 +23,6 @@
       <div>
         <input type="text" v-model="fillColor" />
         <input type="text" v-model="strokeColor" />
-        <button @click="renderImage">Generate</button>
       </div>
     </div>
 
@@ -49,91 +48,32 @@
           },
         },
         watch: {
-          svgString: {
-            handler() {
-              //https://stackoverflow.com/questions/72011260/draw-svg-with-dynamic-value-on-canvas
-              const image = new Image();
-              const context = this.$refs.canvas.getContext("2d");
-
-              image.src = `data:image/svg+xml;base64,${window.btoa(
-                this.svgString
-              )}`;
-              image.onload = () => {
-                context.drawImage(image, 0, 0);
-              };
-            },
-            immediate: true,
+          svgString() {
+            this.renderSvg();
           },
         },
+        mounted() {
+          this.renderSvg();
+        },
         methods: {
-          renderImage(data) {
-            // where does data come from?
-            const array = new Uint8Array(data);
-            const blob = new Blob([array], { type: "image/png" });
-            const res = window.URL.createObjectURL(blob);
-            downscaleImage(res, 600).then(async (newRes) => {
-              this.imageFile = dataURLtoFile(newRes, "cover.jpg");
+          renderSvg() {
+            //https://stackoverflow.com/questions/72011260/draw-svg-with-dynamic-value-on-canvas
+            const image = new Image();
+            const context = this.$refs.canvas.getContext("2d");
 
-              /*
-                    // Upload to s3
-                    const { key } = await uploadFileToS3(file);
+            image.src = `data:image/svg+xml;base64,${window.btoa(
+              this.svgString
+            )}`;
 
-                    const { id: projectId } = this.$route.query;
-                    await this.axios.put(this.$api.videoProjects + `/${projectId}`, {
-                      thumbnail_key: key,
-                    });
-                    */
-            });
+            image.onload = () => {
+              context.drawImage(image, 0, 0);
+
+              // Render image
+              this.imageFile = this.$refs.canvas.toDataURL("image/png");
+            };
           },
         },
       }).mount("#app");
-
-      function dataURLtoFile(dataurl, filename) {
-        let arr = dataurl.split(","),
-          mime = arr[0].match(/:(.*?);/)[1],
-          bstr = atob(arr[1]),
-          n = bstr.length,
-          u8arr = new Uint8Array(n);
-        while (n--) {
-          u8arr[n] = bstr.charCodeAt(n);
-        }
-        return new File([u8arr], filename, { type: mime });
-      }
-
-      function downscaleImage(dataUrl, newWidth, imageType, imageArguments) {
-        "use strict";
-        let image, oldWidth, oldHeight, newHeight, canvas, ctx, newDataUrl;
-
-        // Provide default values
-        imageType = imageType || "image/jpeg";
-        imageArguments = imageArguments || 0.7;
-
-        // Create a temporary image so that we can compute the height of the downscaled image.
-        image = new Image();
-        return new Promise((resolve) => {
-          image.src = dataUrl;
-          image.addEventListener("load", () => {
-            oldWidth = image.width;
-            oldHeight = image.height;
-            newHeight = Math.floor((oldHeight / oldWidth) * newWidth);
-            canvas = document.createElement("canvas");
-            canvas.width = newWidth;
-            canvas.height = newHeight;
-            // // Create a temporary canvas to draw the downscaled image on.
-
-            // // Draw the downscaled image on the canvas and return the new data URL.
-            ctx = canvas.getContext("2d");
-            // If transparent, make it white
-            ctx.fillStyle = "#fff"; /// set white fill style
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // Draw picture
-            ctx.drawImage(image, 0, 0, newWidth, newHeight);
-            newDataUrl = canvas.toDataURL(imageType, imageArguments);
-            resolve(newDataUrl);
-          });
-        });
-      }
     </script>
 
     <style>
