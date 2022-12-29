@@ -17,3 +17,6 @@ All files are standalone.  No webserver required.
 Open `index.html` in your browser and manipulate the colors by updating the text boxes.  UI to mutate SVG on left and rendered PNG on right.  Right-click to save the PNG in local folder as `testsave.png`
 
 Open `testsave.html` to view the PNG on a yellow background, to demonstrate the alpha layer is intact, as evidenced by the slight shadow gradient.
+
+## Notes
+- Consider using OffscreenCanvas API with a Web Worker to do image rendering (and Posting?) in a separate thread, keeping the UI for the user fast and responsive. (https://developer.chrome.com/blog/offscreen-canvas/)
