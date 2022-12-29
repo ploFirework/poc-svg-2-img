@@ -19,4 +19,4 @@ Open `index.html` in your browser and manipulate the colors by updating the text
 Open `testsave.html` to view the PNG on a yellow background, to demonstrate the alpha layer is intact, as evidenced by the slight shadow gradient.
 
 ## Notes
-- Consider using OffscreenCanvas API with a Web Worker to do image rendering (and Posting?) in a separate thread, keeping the UI for the user fast and responsive. (https://developer.chrome.com/blog/offscreen-canvas/)
+- Consider using OffscreenCanvas API with a Web Worker to do image rendering (and Posting?) in a separate thread, reserving the main thread for UI so that  user-experience is not affected. (https://developer.chrome.com/blog/offscreen-canvas/)
