@@ -95,6 +95,12 @@
             )}`;
 
             image.onload = () => {
+              context.clearRect(
+                0,
+                0,
+                this.$refs.canvas.width,
+                this.$refs.canvas.height
+              );
               context.drawImage(image, 0, 0);
 
               // Render image
